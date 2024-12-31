@@ -1,7 +1,8 @@
 <script lang="ts">
     import MusicBingoApi from '$lib/api/MusicBingoApi';
-	import type { SimplifiedTrack } from '@spotify/web-api-ts-sdk';
+    import type { SimplifiedTrack } from '@spotify/web-api-ts-sdk';
     import jsPDF from 'jspdf';
+    import QRious from 'qrious';
     let playlistId = '';
     let playlist: any = null;
     let errorMessage = '';
@@ -69,10 +70,15 @@
             // Page for Spotify URIs
             pageTracks.forEach((item) => {
                 const track = item.track as SimplifiedTrack;
-                const spotifyURI = track.uri;
+                const spotifyURI = `https://open.spotify.com/track/${track.id}`;
+
+                const qr = new QRious({
+                    value: spotifyURI,
+                    size: cardSize - 20
+                });
 
                 doc.rect(x, y, cardSize, cardSize);
-                fitText(doc, `Spotify URI: ${spotifyURI}`, x + cardSize / 2, y + cardSize / 2, cardSize - 10, cardSize / 2);
+                doc.addImage(qr.toDataURL(), 'PNG', x + 10, y + 10, cardSize - 20, cardSize - 20);
 
                 x += cardSize + margin;
                 if (x + cardSize + margin > doc.internal.pageSize.width) {
@@ -95,9 +101,8 @@
                 doc.rect(x, y, cardSize, cardSize);
                 doc.setFontSize(18); // Increase font size for artist name
                 fitText(doc, artist, x + cardSize / 2, y + 10, cardSize - 10, 10);
-                doc.setFontSize(40); // Increase font size for artist name
-                fitText(doc, `${year}`, x + cardSize / 2, y + cardSize / 2, cardSize - 10, 10);
                 doc.setFontSize(12); // Reset font size for year and track name
+                fitText(doc, `${year}`, x + cardSize / 2, y + cardSize / 2, cardSize - 10, 10);
                 fitText(doc, trackName, x + cardSize / 2, y + cardSize - 10, cardSize - 10, 10);
 
                 x += cardSize + margin;
