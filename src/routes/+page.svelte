@@ -46,10 +46,9 @@
 
         const doc = new jsPDF();
         const tracks = playlist.tracks.items;
-        const cardWidth = 90;
-        const cardHeight = 50;
+        const cardSize = 70; // Square card size
         const margin = 10;
-        const itemsPerPage = Math.floor(doc.internal.pageSize.height / (cardHeight + margin)) * Math.floor(doc.internal.pageSize.width / (cardWidth + margin));
+        const itemsPerPage = Math.floor(doc.internal.pageSize.height / (cardSize + margin)) * Math.floor(doc.internal.pageSize.width / (cardSize + margin));
         const pages = splitIntoPages(tracks, itemsPerPage);
 
         pages.forEach((pageTracks, pageIndex) => {
@@ -61,13 +60,13 @@
                 const track = item.track;
                 const spotifyURI = track.uri;
 
-                doc.rect(x, y, cardWidth, cardHeight);
-                doc.text(`Spotify URI: ${spotifyURI}`, x + 5, y + 25);
+                doc.rect(x, y, cardSize, cardSize);
+                doc.text(`Spotify URI: ${spotifyURI}`, x + 5, y + cardSize / 2);
 
-                x += cardWidth + margin;
-                if (x + cardWidth + margin > doc.internal.pageSize.width) {
+                x += cardSize + margin;
+                if (x + cardSize + margin > doc.internal.pageSize.width) {
                     x = margin;
-                    y += cardHeight + margin;
+                    y += cardSize + margin;
                 }
             });
 
@@ -82,15 +81,15 @@
                 const year = new Date(track.album.release_date).getFullYear();
                 const trackName = track.name;
 
-                doc.rect(x, y, cardWidth, cardHeight);
-                doc.text(`Artist: ${artist}`, x + 5, y + 15);
-                doc.text(`Year: ${year}`, x + 5, y + 25);
-                doc.text(`Track: ${trackName}`, x + 5, y + 35);
+                doc.rect(x, y, cardSize, cardSize);
+                doc.text(artist, x + cardSize / 2, y + 10, { align: 'center' });
+                doc.text(`${year}`, x + cardSize / 2, y + cardSize / 2, { align: 'center' });
+                doc.text(trackName, x + cardSize / 2, y + cardSize - 10, { align: 'center' });
 
-                x += cardWidth + margin;
-                if (x + cardWidth + margin > doc.internal.pageSize.width) {
+                x += cardSize + margin;
+                if (x + cardSize + margin > doc.internal.pageSize.width) {
                     x = margin;
-                    y += cardHeight + margin;
+                    y += cardSize + margin;
                 }
             });
 
