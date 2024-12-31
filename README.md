@@ -1,6 +1,6 @@
-# sv
+# 🎵 MusicBingo: Scan, Listen, Guess! 🎶
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+MusicBingo brings your favorite tunes to life in an exciting guessing game! 🎯 Each card features a QR code linked to a music track—scan it 📲 to hear the song, and use the clues on the other side, including the artist 🎤, year 📅, and track name 🎼, to make your guess. Challenge your music knowledge 🎧, compete with friends 👫, and discover new tracks 🌟 in this fun and engaging game. Whether you're a music aficionado or just love a good tune, MusicBingo is the perfect blend of trivia and melody. 🎉 Ready to play? Let the guessing begin! 🥳
 
 ## Creating a project
 
@@ -14,25 +14,19 @@ npx sv create
 npx sv create my-app
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+##Developing
+Once you've created a project and installed dependencies with npm install (or pnpm install or yarn), start a development server:
 
 ```bash
 npm run dev
-
+```
 # or start the server and open the app in a new browser tab
+```bash
 npm run dev -- --open
 ```
-
 ## Building
-
 To create a production version of your app:
-
 ```bash
 npm run build
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+You can preview the production build with npm run preview.
