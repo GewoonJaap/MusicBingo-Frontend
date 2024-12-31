@@ -1,5 +1,6 @@
 <script lang="ts">
     import MusicBingoApi from '$lib/api/MusicBingoApi';
+	import type { SimplifiedTrack } from '@spotify/web-api-ts-sdk';
     import jsPDF from 'jspdf';
     let playlistId = '';
     let playlist: any = null;
@@ -67,7 +68,7 @@
 
             // Page for Spotify URIs
             pageTracks.forEach((item) => {
-                const track = item.track;
+                const track = item.track as SimplifiedTrack;
                 const spotifyURI = track.uri;
 
                 doc.rect(x, y, cardSize, cardSize);
@@ -92,8 +93,11 @@
                 const trackName = track.name;
 
                 doc.rect(x, y, cardSize, cardSize);
+                doc.setFontSize(18); // Increase font size for artist name
                 fitText(doc, artist, x + cardSize / 2, y + 10, cardSize - 10, 10);
+                doc.setFontSize(40); // Increase font size for artist name
                 fitText(doc, `${year}`, x + cardSize / 2, y + cardSize / 2, cardSize - 10, 10);
+                doc.setFontSize(12); // Reset font size for year and track name
                 fitText(doc, trackName, x + cardSize / 2, y + cardSize - 10, cardSize - 10, 10);
 
                 x += cardSize + margin;
