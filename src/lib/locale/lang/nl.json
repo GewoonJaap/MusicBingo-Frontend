@@ -1,0 +1,11 @@
+{
+	"TITLE": "🎵 MusicBingo: Scan, Luister, Raad! 🎶",
+	"DESCRIPTION": "MusicBingo: Scan QR-codes 🎵, luister naar nummers en raad de track met hints zoals artiest, jaar en titel. Speel met vrienden en test je muziekkennis in dit leuke, boeiende spel! 🎯",
+	"PLACEHOLDER": "Voer Spotify Playlist of Album ID of URL in",
+	"LOADING": "Laden...",
+	"FETCH_DETAILS": "Details Ophalen",
+	"BY": "door",
+	"FOLLOWERS": "Volgers",
+	"OPEN_IN_SPOTIFY": "Open in Spotify",
+	"GENERATE_PDF": "PDF Genereren"
+}

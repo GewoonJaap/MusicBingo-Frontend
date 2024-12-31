@@ -3,6 +3,18 @@
 	import type { SimplifiedTrack } from '@spotify/web-api-ts-sdk';
 	import jsPDF from 'jspdf';
 	import QRious from 'qrious';
+	import { setupLocale } from '$lib/locale/i18';
+	import { _ } from 'svelte-i18n';
+	import SEO from '$lib/components/SEO/index.svelte';
+
+	setupLocale();
+
+	const SEOTags = {
+		metadescription:
+			'MusicBingo: Scan QR codes 🎵, listen to songs, and guess the track using hints like artist, year, and title. Play with friends and test your music knowledge!',
+		slug: '',
+		title: 'MusicBingo: Scan, Listen, Guess!'
+	};
 
 	interface MusicDetails {
 		name: string;
@@ -175,49 +187,100 @@
 	}
 </script>
 
+<SEO {...SEOTags} />
 <div class="flex min-h-screen items-center justify-center bg-gray-100">
 	<div class="w-full max-w-md rounded bg-white p-6 text-center shadow-md">
-		<h1 class="mb-4 text-4xl font-bold">MusicBingo</h1>
-		<input
-			type="text"
-			bind:value={playlistId}
-			placeholder="Enter Spotify Playlist or Album ID or URL"
-			class="mb-4 w-full rounded border p-2"
-		/>
-		<button
-			on:click={handleFetchDetails}
-			class="w-full rounded bg-blue-500 p-2 text-white"
-			disabled={isLoading}
-		>
+		<h1 class="title">{$_('TITLE')}</h1>
+		<p class="description">{$_('DESCRIPTION')}</p>
+		<input type="text" bind:value={playlistId} placeholder={$_('PLACEHOLDER')} class="input" />
+		<button on:click={handleFetchDetails} class="button" disabled={isLoading}>
 			{#if isLoading}
-				Loading...
+				{$_('LOADING')}
 			{:else}
-				Fetch Details
+				{$_('FETCH_DETAILS')}
 			{/if}
 		</button>
 		{#if errorMessage}
-			<p class="mt-4 text-red-500">{errorMessage}</p>
+			<p class="error">{errorMessage}</p>
 		{/if}
 		{#if musicDetails}
-			<div class="mt-6">
-				<h2 class="text-2xl font-bold">{musicDetails.name}</h2>
-				<p class="text-gray-600">by {musicDetails.creator}</p>
+			<div class="details">
+				<h2>{musicDetails.name}</h2>
+				<p>{$_('BY')} {musicDetails.creator}</p>
 				<img src={musicDetails.image} alt="Image" class="mt-4 w-full rounded shadow-md" />
 				{#if musicDetails.followers > 0}
-					<p class="mt-2 text-gray-500">Followers: {musicDetails.followers}</p>
+					<p class="mt-2 text-gray-500">{$_('FOLLOWERS')}: {musicDetails.followers}</p>
 				{/if}
 				<a
 					href={`https://open.spotify.com/${playlistId.includes('playlist') ? 'playlist' : 'album'}/${extractId(playlistId)}`}
 					target="_blank"
-					class="mt-2 block text-blue-500">Open in Spotify</a
+					class="mt-2 block text-blue-500">{$_('OPEN_IN_SPOTIFY')}</a
 				>
-				<button
-					on:click={handleGeneratePDF}
-					class="mt-4 w-full rounded bg-green-500 p-2 text-white"
-				>
-					Generate PDF
+				<button on:click={handleGeneratePDF} class="button mt-4">
+					{$_('GENERATE_PDF')}
 				</button>
 			</div>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.title {
+		font-size: 2.5rem;
+		font-weight: bold;
+		color: #1db954; /* Spotify Green */
+	}
+	.description {
+		font-size: 1.125rem;
+		color: #555;
+		margin-bottom: 1.5rem;
+	}
+	.input {
+		border: 2px solid #1db954;
+		padding: 0.5rem;
+		border-radius: 0.375rem;
+		width: 100%;
+		margin-bottom: 1rem;
+	}
+	.button {
+		background-color: #1db954;
+		color: white;
+		padding: 0.75rem;
+		border-radius: 0.375rem;
+		width: 100%;
+		font-size: 1rem;
+		font-weight: bold;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+	.button:hover {
+		background-color: #1aa34a;
+	}
+	.error {
+		color: #e3342f;
+		margin-top: 1rem;
+	}
+	.details {
+		margin-top: 1.5rem;
+	}
+	.details img {
+		border-radius: 0.375rem;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+	.details h2 {
+		font-size: 1.5rem;
+		font-weight: bold;
+		margin-top: 1rem;
+	}
+	.details p {
+		color: #555;
+	}
+	.details a {
+		color: #1db954;
+		text-decoration: none;
+		font-weight: bold;
+	}
+	.details a:hover {
+		text-decoration: underline;
+	}
+</style>

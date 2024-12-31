@@ -1,0 +1,11 @@
+{
+	"TITLE": "🎵 MusicBingo: Scan, Listen, Guess! 🎶",
+	"DESCRIPTION": "MusicBingo: Scan QR codes 🎵, listen to songs, and guess the track using hints like artist, year, and title. Play with friends and test your music knowledge!",
+	"PLACEHOLDER": "Enter Spotify Playlist or Album ID or URL",
+	"LOADING": "Loading...",
+	"FETCH_DETAILS": "Fetch Details",
+	"BY": "by",
+	"FOLLOWERS": "Followers",
+	"OPEN_IN_SPOTIFY": "Open in Spotify",
+	"GENERATE_PDF": "Generate PDF"
+}
