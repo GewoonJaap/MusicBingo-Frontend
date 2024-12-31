@@ -35,6 +35,7 @@
 	let musicDetails: MusicDetails | null = null;
 	let errorMessage = '';
 	let isLoading = false;
+	let isShuffled = false;
 
 	function extractId(input: string): string {
 		const urlPattern = /https:\/\/open\.spotify\.com\/(playlist|album|artist)\/([a-zA-Z0-9]+)\?/;
@@ -127,9 +128,24 @@
 		doc.text(text, x, y, { align: 'center' });
 	}
 
+	function shuffleTracks(tracks: any[]): any[] {
+		for (let i = tracks.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+		}
+		return tracks;
+	}
+
+	function toggleShuffle() {
+		if (musicDetails) {
+			musicDetails.tracks = shuffleTracks([...musicDetails.tracks]);
+			isShuffled = !isShuffled;
+		}
+	}
+
 	function generatePDF(details: MusicDetails): void {
 		const doc = new jsPDF();
-		const tracks = details.tracks;
+		const tracks = isShuffled ? shuffleTracks([...details.tracks]) : details.tracks;
 		const cardSize = 70; // Square card size
 		const margin = 10;
 		const itemsPerPage =
@@ -243,6 +259,12 @@
 					target="_blank"
 					class="mt-2 block text-blue-500">{$_('OPEN_IN_SPOTIFY')}</a
 				>
+				<div class="mt-4">
+					<label for="shuffle">{$_('SHUFFLE_TRACKS')}</label>
+					<button on:click={toggleShuffle} class="button mt-2">
+						{isShuffled ? $_('UNSHUFFLE') : $_('SHUFFLE')}
+					</button>
+				</div>
 				<button on:click={handleGeneratePDF} class="button mt-4">
 					{$_('GENERATE_PDF')}
 				</button>

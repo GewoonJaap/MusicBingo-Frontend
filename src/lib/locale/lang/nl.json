@@ -7,5 +7,8 @@
 	"BY": "door",
 	"FOLLOWERS": "Volgers",
 	"OPEN_IN_SPOTIFY": "Open in Spotify",
-	"GENERATE_PDF": "PDF Genereren"
+	"GENERATE_PDF": "PDF Genereren",
+	"SHUFFLE_TRACKS": "Shuffle nummers",
+	"SHUFFLE": "Shuffle",
+	"UNSHUFFLE": "Unshuffle"
 }
