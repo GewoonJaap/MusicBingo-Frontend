@@ -1,4 +1,4 @@
-import type { Album, Playlist, SimplifiedAlbum, Track } from '@spotify/web-api-ts-sdk';
+import type { Album, Artist, Playlist, SimplifiedAlbum, Track } from '@spotify/web-api-ts-sdk';
 
 const BASE_URL = 'https://musicbingo-backend.gewoonjaap.workers.dev/api/card';
 
@@ -14,13 +14,24 @@ class MusicBingoApi {
 		return response.json();
 	}
 
-	async getArtist(artistId: string): Promise<SimplifiedAlbum[]> {
+	async getArtist(artistId: string): Promise<Artist> {
 		if (!artistId) {
 			throw new Error('No artistId provided');
 		}
 		const response = await fetch(`${BASE_URL}/artist/${artistId}`);
 		if (!response.ok) {
 			throw new Error(`Error fetching artist: ${response.statusText}`);
+		}
+		return response.json();
+	}
+
+	async getArtistAlbums(artistId: string): Promise<SimplifiedAlbum[]> {
+		if (!artistId) {
+			throw new Error('No artistId provided');
+		}
+		const response = await fetch(`${BASE_URL}/artist/${artistId}/albums`);
+		if (!response.ok) {
+			throw new Error(`Error fetching artist albums: ${response.statusText}`);
 		}
 		return response.json();
 	}
