@@ -1,6 +1,12 @@
 <script lang="ts">
 	import MusicBingoApi from '$lib/api/MusicBingoApi';
-	import type { SimplifiedTrack } from '@spotify/web-api-ts-sdk';
+	import type {
+		SimplifiedTrack,
+		PlaylistTrack,
+		SimplifiedAlbum,
+		Artist,
+		Album
+	} from '@spotify/web-api-ts-sdk';
 	import jsPDF from 'jspdf';
 	import QRious from 'qrious';
 	import { setupLocale } from '$lib/locale/i18';
@@ -21,7 +27,7 @@
 		creator: string;
 		followers: number;
 		image: string;
-		tracks: SimplifiedTrack[];
+		tracks: (PlaylistTrack | { track: SimplifiedTrack; album: Album })[];
 		release_date?: string; // Optional for albums
 	}
 
@@ -31,7 +37,7 @@
 	let isLoading = false;
 
 	function extractId(input: string): string {
-		const urlPattern = /https:\/\/open\.spotify\.com\/(playlist|album)\/([a-zA-Z0-9]+)\?/;
+		const urlPattern = /https:\/\/open\.spotify\.com\/(playlist|album|artist)\/([a-zA-Z0-9]+)\?/;
 		const match = input.match(urlPattern);
 		return match ? match[2] : input;
 	}
@@ -58,8 +64,23 @@
 						creator: album.artists[0].name,
 						followers: 0, // Albums don't have followers
 						image: album.images[0]?.url,
-						tracks: album.tracks.items.map((track) => ({ track })),
+						tracks: album.tracks.items.map((track) => ({ track, album })),
 						release_date: album.release_date
+					};
+				} else if (playlistId.includes('artist')) {
+					const artist = await MusicBingoApi.getArtist(id);
+					const albums = await MusicBingoApi.getArtistAlbums(id);
+					const allTracks = await Promise.all(
+						albums.map((album) => MusicBingoApi.getAlbum(album.id))
+					);
+					details = {
+						name: artist.name,
+						creator: artist.name,
+						followers: artist.followers.total,
+						image: artist.images[0]?.url,
+						tracks: allTracks.flatMap((album) =>
+							album.tracks.items.map((track) => ({ track, album }))
+						)
 					};
 				}
 				errorMessage = '';
@@ -72,14 +93,17 @@
 				isLoading = false;
 			}
 		} else {
-			console.error('Please enter a valid playlist or album ID or URL');
-			errorMessage = 'Please enter a valid playlist or album ID or URL';
+			console.error('Please enter a valid playlist, album, or artist ID or URL');
+			errorMessage = 'Please enter a valid playlist, album, or artist ID or URL';
 			return null;
 		}
 	}
 
-	function splitIntoPages(tracks: SimplifiedTrack[], itemsPerPage: number): SimplifiedTrack[][] {
-		const pages: SimplifiedTrack[][] = [];
+	function splitIntoPages(
+		tracks: (PlaylistTrack | { track: SimplifiedTrack; album: Album })[],
+		itemsPerPage: number
+	): (PlaylistTrack | { track: SimplifiedTrack; album: Album })[][] {
+		const pages: (PlaylistTrack | { track: SimplifiedTrack; album: Album })[][] = [];
 		for (let i = 0; i < tracks.length; i += itemsPerPage) {
 			pages.push(tracks.slice(i, i + itemsPerPage));
 		}
@@ -119,7 +143,7 @@
 
 			// Page for Spotify URIs
 			pageTracks.forEach((item) => {
-				const track = item.track as unknown as SimplifiedTrack;
+				const track = 'track' in item ? (item.track as SimplifiedTrack) : item;
 				const spotifyURI = `https://open.spotify.com/track/${track.id}`;
 
 				const qr = new QRious({
@@ -143,11 +167,14 @@
 
 			// Page for Artist, Year, Track Name
 			pageTracks.forEach((item) => {
-				const track = item.track as unknown as SimplifiedTrack;
+				const track = 'track' in item ? (item.track as SimplifiedTrack) : item;
 				const artist = track.artists[0].name;
-				const year = details.release_date
-					? new Date(details.release_date).getFullYear()
-					: new Date(track.album.release_date).getFullYear();
+				const year =
+					'album' in item && item.album.release_date
+						? new Date(item.album.release_date).getFullYear()
+						: track.album?.release_date
+							? new Date(track.album.release_date).getFullYear()
+							: 'Unknown';
 				const trackName = track.name;
 
 				doc.rect(x, y, cardSize, cardSize);
@@ -212,7 +239,7 @@
 					<p class="mt-2 text-gray-500">{$_('FOLLOWERS')}: {musicDetails.followers}</p>
 				{/if}
 				<a
-					href={`https://open.spotify.com/${playlistId.includes('playlist') ? 'playlist' : 'album'}/${extractId(playlistId)}`}
+					href={`https://open.spotify.com/${playlistId.includes('playlist') ? 'playlist' : playlistId.includes('album') ? 'album' : 'artist'}/${extractId(playlistId)}`}
 					target="_blank"
 					class="mt-2 block text-blue-500">{$_('OPEN_IN_SPOTIFY')}</a
 				>
