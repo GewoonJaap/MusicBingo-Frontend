@@ -41,6 +41,16 @@
         return pages;
     }
 
+    function fitText(doc, text, x, y, maxWidth, maxHeight) {
+        let fontSize = 12;
+        doc.setFontSize(fontSize);
+        while (doc.getTextWidth(text) > maxWidth && fontSize > 6) {
+            fontSize -= 1;
+            doc.setFontSize(fontSize);
+        }
+        doc.text(text, x, y, { align: 'center' });
+    }
+
     function generatePDF() {
         if (!playlist) return;
 
@@ -61,7 +71,7 @@
                 const spotifyURI = track.uri;
 
                 doc.rect(x, y, cardSize, cardSize);
-                doc.text(`Spotify URI: ${spotifyURI}`, x + 5, y + cardSize / 2);
+                fitText(doc, `Spotify URI: ${spotifyURI}`, x + cardSize / 2, y + cardSize / 2, cardSize - 10, cardSize / 2);
 
                 x += cardSize + margin;
                 if (x + cardSize + margin > doc.internal.pageSize.width) {
@@ -82,9 +92,9 @@
                 const trackName = track.name;
 
                 doc.rect(x, y, cardSize, cardSize);
-                doc.text(artist, x + cardSize / 2, y + 10, { align: 'center' });
-                doc.text(`${year}`, x + cardSize / 2, y + cardSize / 2, { align: 'center' });
-                doc.text(trackName, x + cardSize / 2, y + cardSize - 10, { align: 'center' });
+                fitText(doc, artist, x + cardSize / 2, y + 10, cardSize - 10, 10);
+                fitText(doc, `${year}`, x + cardSize / 2, y + cardSize / 2, cardSize - 10, 10);
+                fitText(doc, trackName, x + cardSize / 2, y + cardSize - 10, cardSize - 10, 10);
 
                 x += cardSize + margin;
                 if (x + cardSize + margin > doc.internal.pageSize.width) {
