@@ -234,10 +234,10 @@
 			<div class="details">
 				<h2>{musicDetails.name}</h2>
 				<p>{$_('BY')} {musicDetails.creator}</p>
-				<img src={musicDetails.image} alt="Image" class="mt-4 w-full rounded shadow-md" />
 				{#if musicDetails.followers > 0}
-					<p class="mt-2 text-gray-500">{$_('FOLLOWERS')}: {musicDetails.followers}</p>
+					<p>{$_('FOLLOWERS')}: {musicDetails.followers}</p>
 				{/if}
+				<img src={musicDetails.image} alt="Image" class="mt-4 w-full rounded shadow-md" />
 				<a
 					href={`https://open.spotify.com/${playlistId.includes('playlist') ? 'playlist' : playlistId.includes('album') ? 'album' : 'artist'}/${extractId(playlistId)}`}
 					target="_blank"
