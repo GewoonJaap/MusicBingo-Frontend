@@ -33,6 +33,14 @@
         }
     }
 
+    function splitIntoPages(tracks, itemsPerPage) {
+        const pages = [];
+        for (let i = 0; i < tracks.length; i += itemsPerPage) {
+            pages.push(tracks.slice(i, i + itemsPerPage));
+        }
+        return pages;
+    }
+
     function generatePDF() {
         if (!playlist) return;
 
@@ -41,52 +49,53 @@
         const cardWidth = 90;
         const cardHeight = 50;
         const margin = 10;
-        let x = margin;
-        let y = margin;
+        const itemsPerPage = Math.floor(doc.internal.pageSize.height / (cardHeight + margin)) * Math.floor(doc.internal.pageSize.width / (cardWidth + margin));
+        const pages = splitIntoPages(tracks, itemsPerPage);
 
-        // Page 1: Spotify URIs
-        tracks.forEach((item, index) => {
-            const track = item.track;
-            const spotifyURI = track.uri;
+        pages.forEach((pageTracks, pageIndex) => {
+            let x = margin;
+            let y = margin;
 
-            doc.rect(x, y, cardWidth, cardHeight);
-            doc.text(`Spotify URI: ${spotifyURI}`, x + 5, y + 25);
+            // Page for Spotify URIs
+            pageTracks.forEach((item) => {
+                const track = item.track;
+                const spotifyURI = track.uri;
 
-            x += cardWidth + margin;
-            if (x + cardWidth + margin > doc.internal.pageSize.width) {
-                x = margin;
-                y += cardHeight + margin;
-                if (y + cardHeight + margin > doc.internal.pageSize.height) {
-                    doc.addPage();
-                    y = margin;
+                doc.rect(x, y, cardWidth, cardHeight);
+                doc.text(`Spotify URI: ${spotifyURI}`, x + 5, y + 25);
+
+                x += cardWidth + margin;
+                if (x + cardWidth + margin > doc.internal.pageSize.width) {
+                    x = margin;
+                    y += cardHeight + margin;
                 }
-            }
-        });
+            });
 
-        doc.addPage();
-        x = margin;
-        y = margin;
+            doc.addPage();
+            x = margin;
+            y = margin;
 
-        // Page 2: Artist, Year, Track Name
-        tracks.forEach((item, index) => {
-            const track = item.track;
-            const artist = track.artists[0].name;
-            const year = new Date(track.album.release_date).getFullYear();
-            const trackName = track.name;
+            // Page for Artist, Year, Track Name
+            pageTracks.forEach((item) => {
+                const track = item.track;
+                const artist = track.artists[0].name;
+                const year = new Date(track.album.release_date).getFullYear();
+                const trackName = track.name;
 
-            doc.rect(x, y, cardWidth, cardHeight);
-            doc.text(`Artist: ${artist}`, x + 5, y + 15);
-            doc.text(`Year: ${year}`, x + 5, y + 25);
-            doc.text(`Track: ${trackName}`, x + 5, y + 35);
+                doc.rect(x, y, cardWidth, cardHeight);
+                doc.text(`Artist: ${artist}`, x + 5, y + 15);
+                doc.text(`Year: ${year}`, x + 5, y + 25);
+                doc.text(`Track: ${trackName}`, x + 5, y + 35);
 
-            x += cardWidth + margin;
-            if (x + cardWidth + margin > doc.internal.pageSize.width) {
-                x = margin;
-                y += cardHeight + margin;
-                if (y + cardHeight + margin > doc.internal.pageSize.height) {
-                    doc.addPage();
-                    y = margin;
+                x += cardWidth + margin;
+                if (x + cardWidth + margin > doc.internal.pageSize.width) {
+                    x = margin;
+                    y += cardHeight + margin;
                 }
+            });
+
+            if (pageIndex < pages.length - 1) {
+                doc.addPage();
             }
         });
 
